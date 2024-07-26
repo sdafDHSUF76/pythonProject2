@@ -1,4 +1,5 @@
 import json
+import os
 from http import HTTPStatus
 
 import pytest
@@ -6,8 +7,8 @@ import requests
 from _pytest.python import Metafunc
 from requests import Response
 
-from models.error_list import ErrorParams
-from models.user import User, Users
+from shemas.error_list import ErrorParams2
+from shemas.user import User, Users
 from tests.utils import calculate_pages
 
 
@@ -18,7 +19,7 @@ def pytest_generate_tests(metafunc: Metafunc):
     тут сильно не продумывал логику, сделал пока набросок, но суть здесь, в том, чтобы динамически
     подстраивать параметризацию от количества данных в users.json
     """
-    with open("C:\\Users\\Y\\pythonProject2\\users.json") as f:
+    with open(''.join((os.path.abspath(__file__).split('tests')[0], 'users.json'))) as f:
         users = json.load(f)
     if 'page_and_size_parametrize' in metafunc.fixturenames:
         # Generate test cases based on the user_roles list
@@ -100,7 +101,7 @@ def test_user_invalid_values(app_url: str, user_id: int):
 def test_users_invalid_page_and_size(app_url: str, page: int | str, size: int | str):
     response: Response = requests.get(f"{app_url}/api/users/?page={page}&size={size}")
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    ErrorParams.parse_obj(response.json())
+    ErrorParams2.parse_obj(response.json())
 
 
 def test_users_correct_values_page_and_size(
@@ -141,14 +142,14 @@ def test_users_different_users_depending_on_page(
 def test_users_invalid_page(app_url: str, page: int | str | float):
     response: Response = requests.get(f"{app_url}/api/users/?page={page}")
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    ErrorParams.parse_obj(response.json())
+    ErrorParams2.parse_obj(response.json())
 
 
 @pytest.mark.parametrize("size", [-1, 0, "fafaf", "@/*$%^&#*/()?>,.*/\"", 99999999, 'None', 1.5])
 def test_users_invalid_size(app_url: str, size: int | str | float):
     response: Response = requests.get(f"{app_url}/api/users/?size={size}")
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    ErrorParams.parse_obj(response.json())
+    ErrorParams2.parse_obj(response.json())
 
 
 def test_users_page(app_url: str, data_page: int):

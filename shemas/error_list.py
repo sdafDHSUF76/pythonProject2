@@ -16,5 +16,5 @@ class ErrorParam(BaseModel, extra=Extra.forbid):
     ctx: Optional[Ctx] = None
 
 
-class ErrorParams(BaseModel, extra=Extra.forbid):
+class ErrorParams2(BaseModel, extra=Extra.forbid):
     detail: list[ErrorParam]

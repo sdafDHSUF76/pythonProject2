@@ -6,7 +6,7 @@ import pytest
 from _pytest.nodes import Node
 from _pytest.python import Function
 
-from test_smoke import test_server_is_ready
+from tests.tests.test_smoke import test_server_is_ready
 
 if TYPE_CHECKING:
     from _pytest.main import Session
@@ -18,7 +18,7 @@ def create_envs():
 
     Код не мой, но решил оставить.
     """
-    dotenv.load_dotenv('C:\\Users\\Y\\pythonProject2\\.env.sample')
+    dotenv.load_dotenv(''.join((os.path.abspath(__file__).split('tests')[0], '.env.sample')))
 
 
 @pytest.fixture(scope='session')

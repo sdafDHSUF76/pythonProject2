@@ -1,16 +1,18 @@
 import json
+import os
 from http import HTTPStatus
 
+import uvicorn
 from fastapi import FastAPI, HTTPException, Response
 from fastapi_pagination import Page, add_pagination, paginate
 
-from models.user import User, Users
+from shemas.user import User, Users
 
 app = FastAPI()
 add_pagination(app)
 users: Users | list = []
 
-with open("users.json") as f:
+with open(''.join((os.path.abspath(__file__).split('main')[0], 'users.json'))) as f:
     users = json.load(f)
 
 
@@ -44,3 +46,7 @@ def get_users() -> Page[User]:
     Используется пагинация.
     """
     return paginate(users)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8002)
