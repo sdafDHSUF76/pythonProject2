@@ -1,9 +1,8 @@
 import json
 from http import HTTPStatus
 
-import uvicorn
 from fastapi import FastAPI, HTTPException, Response
-from fastapi_pagination import paginate, add_pagination, Page
+from fastapi_pagination import Page, add_pagination, paginate
 
 from models.user import User, Users
 
@@ -45,7 +44,3 @@ def get_users() -> Page[User]:
     Используется пагинация.
     """
     return paginate(users)
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8002)

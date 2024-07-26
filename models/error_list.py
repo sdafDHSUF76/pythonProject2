@@ -1,6 +1,6 @@
-from typing import List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, EmailStr, HttpUrl, Extra, RootModel
+from pydantic import BaseModel, Extra
 
 
 class Ctx(BaseModel, extra=Extra.forbid):

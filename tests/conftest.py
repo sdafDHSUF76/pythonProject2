@@ -1,14 +1,12 @@
 import os
+from typing import TYPE_CHECKING
 
 import dotenv
 import pytest
-from typing import TYPE_CHECKING
-
+from _pytest.nodes import Node
 from _pytest.python import Function
 
-from tests.test_smoke import test_server_is_ready
-
-from _pytest.nodes import Node
+from test_smoke import test_server_is_ready
 
 if TYPE_CHECKING:
     from _pytest.main import Session
