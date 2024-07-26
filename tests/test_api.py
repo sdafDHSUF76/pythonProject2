@@ -4,40 +4,19 @@ from http import HTTPStatus
 import pytest
 import requests
 from _pytest.python import Metafunc
+from requests import Response
 
 from models.user import User, Users
 from models.error_list import ErrorParams
 
 
-def test_users_no_duplicates(app_url):
-    response = requests.get(f"{app_url}/api/users/")
-    users_ids = [user["id"] for user in response.json()['items']]
-    assert len(users_ids) == len(set(users_ids))
-
-
-@pytest.mark.parametrize("user_id", [1, 6, 12])
-def test_user_id(app_url, user_id):
-    response = requests.get(f"{app_url}/api/users/{user_id}")
-    assert response.status_code == HTTPStatus.OK
-    User.model_validate(response.json())
-
-
-@pytest.mark.parametrize("user_id", [13])
-def test_user_nonexistent_values(app_url, user_id):
-    response = requests.get(f"{app_url}/api/users/{user_id}")
-    assert response.status_code == HTTPStatus.NOT_FOUND
-
-
-@pytest.mark.parametrize("user_id", [-1, 0, "fafaf"])
-def test_user_invalid_values(app_url, user_id):
-    response = requests.get(f"{app_url}/api/users/{user_id}")
-    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-
-
-page_and_size = [(-1, -1), (999999, 999999), (0,0), ("fafaf", "fafaf")]
-
-
 def pytest_generate_tests(metafunc: Metafunc):
+    """Добавил параметризацию в тесты.
+
+    Пришлось сделать ее динамической, так как тестовые данные, могут быть разного количества, но
+    тут сильно не продумывал логику, сделал пока набросок, но суть здесь, в том, чтобы динамически
+    подстраивать параметризацию от количества данных в users.json
+    """
     with open("C:\\Users\\Y\\pythonProject2\\users.json") as f:
         users = json.load(f)
     if 'page_and_size_parametrize' in metafunc.fixturenames:
@@ -50,7 +29,6 @@ def pytest_generate_tests(metafunc: Metafunc):
             (1, 1)
         ]
         metafunc.parametrize('page_and_size_parametrize', new_data_page_and_size)
-
 
     if 'data_page' in metafunc.fixturenames:
         new_data_page = [
@@ -70,55 +48,84 @@ def pytest_generate_tests(metafunc: Metafunc):
         metafunc.parametrize('data_size', new_data_size)
 
 
-@pytest.mark.parametrize("page, size", [
-    (-1, -1),
-    (999999, 999999),
-    (0, 0),
-    ("fafaf", "fafaf"),
-    ("@/*$%^&#*/()?>,.*/\"", "@/*$%^&#*/()?>,.*/\""),
-    ('None', 'None'),
-])
-def test_users_invalid_page_and_size(app_url: str, page: int, size: int):
-    response = requests.get(f"{app_url}/api/users/?page={page}&size={size}")
+def test_users_no_duplicates(app_url: str):
+    response: Response = requests.get(f"{app_url}/api/users/")
+    users_ids = [user["id"] for user in response.json()['items']]
+    assert len(users_ids) == len(set(users_ids))
+
+
+@pytest.mark.parametrize("user_id", [1, 6, 12])
+def test_user_id(app_url: str, user_id: int):
+    response: Response = requests.get(f"{app_url}/api/users/{user_id}")
+    assert response.status_code == HTTPStatus.OK
+    User.model_validate(response.json())
+
+
+@pytest.mark.parametrize("user_id", [13])
+def test_user_nonexistent_values(app_url: str, user_id: int):
+    response: Response = requests.get(f"{app_url}/api/users/{user_id}")
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+@pytest.mark.parametrize("user_id", [-1, 0, "fafaf"])
+def test_user_invalid_values(app_url: str, user_id: int):
+    response: Response = requests.get(f"{app_url}/api/users/{user_id}")
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    a = response.json()
+
+
+@pytest.mark.parametrize(
+    "page, size",
+    [
+        (-1, -1),
+        (999999, 999999),
+        (0, 0),
+        ('fafaf', 'fafaf'),
+        ("@/*$%^&#*/()?>,.*/\"", "@/*$%^&#*/()?>,.*/\""),
+        ('None', 'None'),
+    ],
+)
+def test_users_invalid_page_and_size(app_url: str, page: int | str, size: int | str):
+    response: Response = requests.get(f"{app_url}/api/users/?page={page}&size={size}")
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     ErrorParams.parse_obj(response.json())
 
 
-def test_users_boundary_values_page_and_size(app_url: str, page_and_size_parametrize: tuple[int, int]):
+def test_users_boundary_values_page_and_size(
+    app_url: str, page_and_size_parametrize: tuple[int, int],
+):
     page, size = page_and_size_parametrize
-    response = requests.get(f"{app_url}/api/users/?page={page}&size={size}")
+    response: Response = requests.get(f"{app_url}/api/users/?page={page}&size={size}")
     assert response.status_code == HTTPStatus.OK
     Users.parse_obj(response.json())
 
 
 @pytest.mark.parametrize("page", [-1, 0, "fafaf", "@/*$%^&#*/()?>,.*/\"", 'None'])
 def test_users_invalid_page(app_url: str, page: int | str):
-    response = requests.get(f"{app_url}/api/users/?page={page}")
+    response: Response = requests.get(f"{app_url}/api/users/?page={page}")
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     ErrorParams.parse_obj(response.json())
+
 
 @pytest.mark.parametrize("size", [-1, 0, "fafaf", "@/*$%^&#*/()?>,.*/\"", 99999999, 'None'])
 def test_users_invalid_size(app_url: str, size: int | str):
-    response = requests.get(f"{app_url}/api/users/?size={size}")
+    response: Response = requests.get(f"{app_url}/api/users/?size={size}")
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     ErrorParams.parse_obj(response.json())
 
 
-# @pytest.mark.parametrize("page", [1, 12])
 def test_users_page(app_url: str, data_page: int):
-    response = requests.get(f"{app_url}/api/users/?page={data_page}")
+    response: Response = requests.get(f"{app_url}/api/users/?page={data_page}")
     assert response.status_code == HTTPStatus.OK
     Users.parse_obj(response.json())
 
-# @pytest.mark.parametrize("size", [-1, 0, "fafaf", "@/*$%^&#*/()?>,.*/\"", 99999999, 'None'])
+
 def test_users_size(app_url: str, data_size: int):
-    response = requests.get(f"{app_url}/api/users/?size={data_size}")
+    response: Response = requests.get(f"{app_url}/api/users/?size={data_size}")
     assert response.status_code == HTTPStatus.OK
     Users.parse_obj(response.json())
 
 
 def test_users(app_url: str):
-    response = requests.get(f"{app_url}/api/users/")
+    response: Response = requests.get(f"{app_url}/api/users/")
     assert response.status_code == HTTPStatus.OK
     Users.parse_obj(response.json())
