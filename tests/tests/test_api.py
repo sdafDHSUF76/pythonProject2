@@ -1,18 +1,21 @@
 import json
 import os
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 import requests
-from _pytest.python import Metafunc
 from requests import Response
 
 from shemas.error_list import ErrorParams
 from shemas.user import User, Users
 from tests.utils import calculate_pages
 
+if TYPE_CHECKING:
+    from _pytest.python import Metafunc
 
-def pytest_generate_tests(metafunc: Metafunc):
+
+def pytest_generate_tests(metafunc: 'Metafunc'):
     """Добавил параметризацию в тесты.
 
     Пришлось сделать ее динамической, так как тестовые данные, могут быть разного количества, но

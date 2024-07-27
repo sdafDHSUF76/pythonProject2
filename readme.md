@@ -40,5 +40,5 @@ uvicorn main:app --host=127.0.0.1 --port=8002 --reload
 Для запуска тестов используйте:
 Перед тем как запустить тесты откройте новую console, чтобы там ввести эту команду
 ```bash
-pytest .\tests\tests\
+pytest .\tests\tests\test_api.py -v
 ```

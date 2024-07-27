@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 import dotenv
 import pytest
-from _pytest.nodes import Node
 from _pytest.python import Function
 
 from tests.tests.test_smoke import test_server_is_ready
@@ -39,7 +38,7 @@ def pytest_collection_modifyitems(items: list[Function]):
     for item in items:
         if item.originalname == 'test_server_is_ready':
             return
-    new_test: Node = pytest.Function.from_parent(
+    new_test: Function = pytest.Function.from_parent(
         parent=items[0].parent,
         name=test_server_is_ready.__name__,
         callobj=test_server_is_ready
@@ -55,9 +54,7 @@ def pytest_runtestloop(session: 'Session'):
     тест, то обязательно запустим смоук тест, и удалим его из очереди тестов(чтобы он два раза не
     запускался). Если после прогона смоук тест упал, то останавливаем тестирование
     """
-    if session.items[0].originalname == 'test_server_is_ready':
-        pass
-    else:
+    if session.items[0].originalname != test_server_is_ready.__name__:
         session.ihook.pytest_runtest_protocol(item=session.items[-1], nextitem=None)
         if session.testsfailed:
             session.shouldstop = True
