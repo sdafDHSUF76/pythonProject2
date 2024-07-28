@@ -5,7 +5,7 @@ import dotenv
 import pytest
 from _pytest.python import Function
 
-from tests.tests.test_smoke import test_server_is_ready
+from tests.test_smoke import test_server_is_ready
 
 if TYPE_CHECKING:
     from _pytest.main import Session
