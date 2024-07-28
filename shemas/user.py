@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Extra, HttpUrl
+from pydantic import BaseModel, EmailStr, Extra, HttpUrl, conlist
 
 
 class User(BaseModel, extra=Extra.forbid):
@@ -18,7 +18,7 @@ class Users(BaseModel, extra=Extra.forbid):
     окозалось, поэтому решил пока так оставить. Чтобы было ясно, там нужно в класс пагинации что-то
     переназначить/указывать, чтобы он иначе обрабатывал пагинацию
     """
-    items: list[Optional[User]]
+    items: list[User] | conlist(None, max_length=0)
     total: int
     page: int
     size: int

@@ -33,7 +33,14 @@ def pytest_generate_tests(metafunc: 'Metafunc'):
             (len(users) + 1, len(users) + 1, 0, len(users)),
             (1, 1, 1, len(users))
         ]
-        metafunc.parametrize('page_and_size_parametrize', new_data_page_and_size)
+        metafunc.parametrize(
+            'page_and_size_parametrize',
+            new_data_page_and_size,
+            ids=[
+                str(i).replace(', ', '-').replace('(', '').replace(')', '')
+                for i in new_data_page_and_size
+            ]
+        )
 
     if 'data_page' in metafunc.fixturenames:
         new_data_page = [
@@ -42,7 +49,14 @@ def pytest_generate_tests(metafunc: 'Metafunc'):
             99999999,
             2 if len(users) > 1 else 1,
         ]
-        metafunc.parametrize('data_page', set(new_data_page))
+        metafunc.parametrize(
+            'data_page',
+            set(new_data_page),
+            ids=[
+                str(i).replace(', ', '-').replace('(', '').replace(')', '')
+                for i in set(new_data_page)
+            ]
+        )
 
     if 'data_size' in metafunc.fixturenames:
         new_data_size = [
@@ -50,7 +64,14 @@ def pytest_generate_tests(metafunc: 'Metafunc'):
             1,
             2 if len(users) > 1 else 1,
         ]
-        metafunc.parametrize('data_size', set(new_data_size))
+        metafunc.parametrize(
+            'data_size',
+            set(new_data_size),
+            ids=[
+                str(i).replace(', ', '-').replace('(', '').replace(')', '')
+                for i in set(new_data_size)
+            ]
+        )
 
     if 'different_page' in metafunc.fixturenames:
         new_data_page_and_size = [
@@ -61,7 +82,14 @@ def pytest_generate_tests(metafunc: 'Metafunc'):
             (3, 2, (users[3]['id'], users[4]['id'], users[5]['id'])),
             (5, 3, (users[10]['id'], users[11]['id'])),
         ]
-        metafunc.parametrize('different_page', set(new_data_page_and_size))
+        metafunc.parametrize(
+            'different_page',
+            set(new_data_page_and_size),
+            ids=[
+                str(i).replace(', ', '-').replace('(', '').replace(')', '')
+                for i in set(new_data_page_and_size)
+            ]
+        )
 
 
 def test_users_no_duplicates(app_url: str):

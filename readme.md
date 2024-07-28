@@ -31,7 +31,7 @@ pip install -r requirements.txt
 
 Чтобы запустить сервис, выполните команду:
 ```bash
-uvicorn main:app --host=127.0.0.1 --port=8002 --reload
+uvicorn main:app --host=127.0.0.1 --port=8004 --reload
 ```
 Проверялся запуск на windows, как на других ОС, как работает не проверял
 
@@ -40,5 +40,5 @@ uvicorn main:app --host=127.0.0.1 --port=8002 --reload
 Для запуска тестов используйте:
 Перед тем как запустить тесты откройте новую console, чтобы там ввести эту команду
 ```bash
-pytest .\tests\tests\test_api.py -v
+pytest .\tests\tests\ -v
 ```
