@@ -86,7 +86,7 @@ def pytest_generate_tests(metafunc: 'Metafunc'):
             'different_page',
             set(new_data_page_and_size),
             ids=[
-                str(i)[1:-1].replace(', ', '-').replace(',', '')
+                str(i)[1:-1].replace(', ', '-')
                 for i in set(new_data_page_and_size)
             ]
         )
@@ -116,7 +116,7 @@ def test_users_correct_values_page_and_size(
     page, size, expected_count_user, total_users = page_and_size_parametrize
     response: Response = requests.get(f"{app_url}/api/users/?page={page}&size={size}")
     assert response.status_code == HTTPStatus.OK
-    response_payload: dict = Users.model_validate(response.json()).dict()
+    response_payload: dict = Users.model_validate(response.json()).model_dump()
     assert len(response_payload['items']) == expected_count_user
     assert response_payload['total'] == total_users
     assert response_payload['page'] == page
@@ -130,7 +130,7 @@ def test_users_different_users_depending_on_page(
     size, page, expected_id_users = different_page
     response: Response = requests.get(f"{app_url}/api/users/?page={page}&size={size}")
     assert response.status_code == HTTPStatus.OK
-    response_payload: dict = Users.model_validate(response.json()).dict()
+    response_payload: dict = Users.model_validate(response.json()).model_dump()
     current_user_id = [
         unit['id'] for unit in response_payload['items'] if len(response_payload['items'])
     ]

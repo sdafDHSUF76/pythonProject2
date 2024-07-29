@@ -1,14 +1,20 @@
 from typing import Optional
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, ConfigDict
 
 
-class Ctx(BaseModel, extra=Extra.forbid):
+class Ctx(BaseModel):
+
+    model_config = ConfigDict(extra='forbid')
+
     ge: Optional[int] = None
     le: Optional[int] = None
 
 
-class ErrorParam(BaseModel, extra=Extra.forbid):
+class ErrorParam(BaseModel):
+
+    model_config = ConfigDict(extra='forbid')
+
     type: str
     loc: list[str]
     msg: str
@@ -16,5 +22,8 @@ class ErrorParam(BaseModel, extra=Extra.forbid):
     ctx: Optional[Ctx] = None
 
 
-class ErrorParams(BaseModel, extra=Extra.forbid):
+class ErrorParams(BaseModel):
+
+    model_config = ConfigDict(extra='forbid')
+
     detail: list[ErrorParam]
