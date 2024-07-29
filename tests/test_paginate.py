@@ -86,7 +86,7 @@ def pytest_generate_tests(metafunc: 'Metafunc'):
             'different_page',
             set(new_data_page_and_size),
             ids=[
-                str(i)[1:-1].replace(', ', '-')
+                str(i)[1:-1].replace(', ', '-', 2)
                 for i in set(new_data_page_and_size)
             ]
         )
